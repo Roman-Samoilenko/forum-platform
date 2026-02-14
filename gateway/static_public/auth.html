@@ -147,8 +147,14 @@
             color: var(--text-muted);
         }
 
+        .buttons-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
         .submit-btn {
-            width: 100%;
+            flex: 1;
             padding: 16px;
             background: var(--accent-primary);
             color: white;
@@ -157,15 +163,30 @@
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 8px;
             transition: all 0.2s ease;
             font-family: inherit;
         }
 
+        .submit-btn.login {
+            background: var(--accent-primary);
+        }
+
+        .submit-btn.register {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-accent);
+        }
+
         .submit-btn:hover {
-            background: var(--accent-dark);
             transform: translateY(-1px);
             box-shadow: 0 4px 16px var(--purple-glow);
+        }
+
+        .submit-btn.login:hover {
+            background: var(--accent-dark);
+        }
+
+        .submit-btn.register:hover {
+            background: var(--bg-primary);
         }
 
         .submit-btn:active {
@@ -208,6 +229,10 @@
             .logo-text {
                 font-size: 1.75rem;
             }
+            
+            .buttons-container {
+                flex-direction: column;
+            }
         }
 
         /* Accessibility improvements */
@@ -237,7 +262,7 @@
             </div>
             <h1 class="subtitle">Войдите в свой аккаунт или создайте новый</h1>
             
-            <form id="registrationForm" method="post" action="/auth">
+            <form id="registrationForm" method="post">
                 <div class="form-group">
                     <label for="login">Логин</label>
                     <input type="text" id="login" name="login" required placeholder="Введите ваш логин">
@@ -248,7 +273,10 @@
                     <input type="password" id="password" name="password" required placeholder="Введите пароль">
                 </div>
                 
-                <button type="submit" class="submit-btn">Войти / Зарегистрироваться</button>
+                <div class="buttons-container">
+                    <button type="button" class="submit-btn login" id="loginBtn">Войти</button>
+                    <button type="button" class="submit-btn register" id="registerBtn">Зарегистрироваться</button>
+                </div>
             </form>
             
             <div class="footer">
@@ -257,6 +285,100 @@
         </div>
     </div>
     
-    <script src="/public/reg.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginBtn = document.getElementById('loginBtn');
+            const registerBtn = document.getElementById('registerBtn');
+
+            loginBtn.addEventListener('click', async function() {
+                await submitForm('/auth', 'Вход выполнен успешно!');
+            });
+
+            registerBtn.addEventListener('click', async function() {
+                await submitForm('/reg', 'Регистрация выполнена успешно!');
+            });
+
+            async function submitForm(url, successMessage) {
+                const data = {
+                    login: document.getElementById('login').value,
+                    password: document.getElementById('password').value
+                };
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        showAlert('success', result.message || successMessage);
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 1500);
+                    } else {
+                        const error = await response.json();
+                        showAlert('error', error.message || 'Ошибка операции');
+                    }
+                } catch (error) {
+                    showAlert('error', 'Ошибка сети');
+                    console.error('Ошибка:', error);
+                }
+            }
+
+            function showAlert(type, message) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert ${type}`;
+                alertDiv.textContent = message;
+                alertDiv.style.position = 'fixed';
+                alertDiv.style.top = '20px';
+                alertDiv.style.left = '50%';
+                alertDiv.style.transform = 'translateX(-50%)';
+                alertDiv.style.padding = '12px 24px';
+                alertDiv.style.borderRadius = '8px';
+                alertDiv.style.zIndex = '1000';
+                alertDiv.style.fontWeight = '500';
+                
+                if (type === 'success') {
+                    alertDiv.style.background = '#10b981';
+                    alertDiv.style.color = 'white';
+                } else {
+                    alertDiv.style.background = '#ef4444';
+                    alertDiv.style.color = 'white';
+                }
+
+                document.body.appendChild(alertDiv);
+
+                setTimeout(() => {
+                    alertDiv.remove();
+                }, 3000);
+            }
+
+            const inputs = document.querySelectorAll('input');
+
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.value.length > 0) {
+                        this.style.boxShadow = '0 0 15px rgba(0, 255, 0, 0.3)';
+                    } else {
+                        this.style.boxShadow = '';
+                    }
+                });
+            });
+
+            const buttons = document.querySelectorAll('.submit-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+        });
+    </script>
 </body>
 </html>

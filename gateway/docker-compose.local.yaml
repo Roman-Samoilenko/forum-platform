@@ -5,16 +5,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: air-nginx-openresty
-    networks:
-      - air-network
+    container_name: gateway-local
     ports:
       - "7000:7000"
     volumes:
       - ./static_public:/usr/share/nginx/static_public:ro
       - ./logs:/var/log/nginx
     restart: unless-stopped
+    networks:
+      - gateway-local
 
 networks:
-  air-network:
-    external: true
+  gateway-local:
+    driver: bridge
+
