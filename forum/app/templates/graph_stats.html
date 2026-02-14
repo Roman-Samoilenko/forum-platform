@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}⚡ Статистика графа - AIR.forum{% endblock %}
+{% block content %}
+<h2>Статистика графа связей</h2>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>{{ total_topics }}</h3>
+        <p>Всего тем</p>
+    </div>
+    <div class="stat-card">
+        <h3>{{ total_users }}</h3>
+        <p>Авторов</p>
+    </div>
+    <div class="stat-card">
+        <h3>{{ total_tags }}</h3>
+        <p>Уникальных тегов</p>
+    </div>
+</div>
+
+<div class="top-lists">
+    <div class="top-list">
+        <h3>Топ авторов</h3>
+        {% for author in top_authors %}
+        <p>{{ loop.index }}. <a href="/forum/author/{{ author.username }}">{{ author.username }}</a> <span style="color: var(--neon-green);">({{ author.topics_count }} тем)</span></p>
+        {% endfor %}
+    </div>
+    
+    <div class="top-list">
+        <h3>Популярные теги</h3>
+        {% for tag in top_tags %}
+        <p>{{ loop.index }}. <a href="/forum/tag/{{ tag.name }}">{{ tag.name }}</a> <span style="color: var(--neon-green);">({{ tag.usage_count }} раз)</span></p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
