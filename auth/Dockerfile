@@ -15,7 +15,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /app/main ./cmd/app/main.go
 FROM alpine:3.19
 
 # Устанавливаем зависимости времени выполнения если нужны
-RUN apk add --no-cache ca-certificates tzdata
+RUN apk add --no-cache ca-certificates tzdata curl
 
 WORKDIR /app
 

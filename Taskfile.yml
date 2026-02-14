@@ -1,0 +1,75 @@
+version: '3'
+
+vars:
+  GREEN: '\033[0;32m'
+  YELLOW: '\033[1;33m'
+  RED: '\033[0;31m'
+  NC: '\033[0m'
+
+tasks:
+  default:
+    desc: "Показать список команд"
+    cmds:
+      - task --list
+
+  setup:
+    desc: "Первичная инициализация"
+    cmds:
+      - chmod +x setup.sh
+      - ./setup.sh
+
+  build:
+    desc: "Сборка всех образов"
+    cmds:
+      - printf "{{.GREEN}}Сборка образов...{{.NC}}\n"
+      - docker compose build
+
+  up:
+    desc: "Запуск всех сервисов"
+    cmds:
+      - printf "{{.GREEN}}Запуск сервисов...{{.NC}}\n"
+      - docker compose up -d
+
+  up-build:
+    desc: "Сборка и запуск"
+    cmds:
+      - printf "{{.GREEN}}Сборка и запуск сервисов...{{.NC}}\n"
+      - docker compose up --build -d
+
+  down:
+    desc: "Остановка всех сервисов"
+    cmds:
+      - printf "{{.YELLOW}}Остановка сервисов...{{.NC}}\n"
+      - docker compose down
+
+  restart:
+    desc: "Перезапуск всех сервисов"
+    cmds:
+      - printf "{{.YELLOW}}Перезапуск сервисов...{{.NC}}\n"
+      - docker compose restart
+
+  logs:
+    desc: "Логи всех сервисов"
+    cmds:
+      - docker compose logs -f
+
+  status:
+    desc: "Статус сервисов"
+    cmds:
+      - docker compose ps
+
+  clean:
+    desc: "Очистка контейнеров и сетей"
+    cmds:
+      - printf "{{.YELLOW}}Очистка...{{.NC}}\n"
+      - docker compose down -v --remove-orphans
+
+  db-psql:
+    desc: "Подключение к PostgreSQL"
+    cmds:
+      - docker compose exec postgres psql -U postgres -d authdb
+
+  db-mongo:
+    desc: "Подключение к MongoDB"
+    cmds:
+      - docker compose exec mongodb mongosh -u admin -p admin
