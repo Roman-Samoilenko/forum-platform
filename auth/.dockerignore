@@ -1,0 +1,9 @@
+.idea/
+docs/
+.git/
+.gitignore
+.vscode/
+Dockerfile
+auth.Dockerfile
+postgresql.Dockerfile
+docker-compose.yaml
